@@ -1,7 +1,7 @@
 extern crate darknet;
 
-const CONFIG_PATH: &'static str = "darknet-sys/darknet/cfg/yolov3-voc.cfg";
-const WEIGHT_FILE_PATH: &'static str = "trained_weights/yolov3.weights";
+const CONFIG_PATH: &'static str = "../darknet/cfg/yolov4.cfg";
+const WEIGHT_FILE_PATH: &'static str = "../darknet/yolov4.weights";
 
 const CLASSES: i32 = 20;
 const THRESH: f32 = 0.001;
@@ -31,6 +31,9 @@ fn main() {
         "train",
         "tvmonitor",
     ];
+    
+    let mut gpus = vec![0];
+    darknet::opencl_init(gpus, 1);
 
     println!("HERE 1");
     let alphabet = darknet::load_alphabet();
@@ -38,7 +41,7 @@ fn main() {
         darknet::load_network(CONFIG_PATH, Option::Some(WEIGHT_FILE_PATH), false).unwrap();
 
     println!("HERE 2");
-    let mut im = darknet::load_image_color("darknet-sys/darknet/data/horses.jpg", 0, 0).unwrap();
+    let mut im = darknet::load_image_color("data/horses.jpg", 0, 0).unwrap();
     im = darknet::resize_image(&im, im.0.w, im.0.h);
 
     println!("HERE 3");
@@ -62,6 +65,7 @@ fn main() {
         darknet::load_names(voc_names).unwrap(),
         alphabet,
         CLASSES,
+        1.0,
     );
     darknet::save_image(&im, "detection");
 }

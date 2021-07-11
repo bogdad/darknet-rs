@@ -184,6 +184,19 @@ pub fn load_names(names_arr: Vec<&str>) -> Result<Names, Error> {
     Ok(Names(names_c.as_ptr() as *mut _))
 }
 
+
+/*
+    pub fn draw_detections(
+        im: image,
+        dets: *mut detection,
+        num: ::std::os::raw::c_int,
+        thresh: f32,
+        names: *mut *mut ::std::os::raw::c_char,
+        alphabet: *mut *mut image,
+        classes: ::std::os::raw::c_int,
+        fps: f32,
+    );
+*/
 pub fn draw_detections(
     img: &Image,
     dets: Detection,
@@ -192,10 +205,18 @@ pub fn draw_detections(
     names: Names,
     alphabet: Alphabet,
     classes: i32,
+    fps: f32,
 ) {
-    unsafe { ffi::draw_detections(img.0, dets.0, num, thresh, names.0, alphabet.0, classes) }
+    unsafe { ffi::draw_detections(img.0, dets.0, num, thresh, names.0, alphabet.0, classes, fps) }
 }
 
 pub fn free_detections(dets: &mut Detection, n: i32) {
     unsafe { ffi::free_detections(dets.0, n) }
+}
+
+pub fn opencl_init(
+    mut gpus: Vec<i32>,
+    ngpus: i32,
+) {
+    unsafe { ffi::opencl_init(gpus.as_mut_ptr(), ngpus) }
 }
